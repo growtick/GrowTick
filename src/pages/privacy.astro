@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+import { site, telHref } from '../config/site';
+const updated = '5 November 2026';
+---
+<Base title="Privacy notice" description="How Growtick collects and uses your personal data under India's Digital Personal Data Protection (DPDP) Act, 2023.">
+  <div class="wrap page-head">
+    <p class="overline">Privacy</p>
+    <h1>Privacy notice</h1>
+    <p class="muted">Last updated: {updated}. <!-- TODO(legal): have this notice reviewed before launch. --></p>
+  </div>
+  <div class="wrap prose pb-xl">
+    <p>{site.name} ("we") respects your privacy. This notice explains, in line with India’s Digital Personal Data Protection Act, 2023 (DPDP Act), what personal data we collect through this website and how we use it.</p>
+
+    <h2>What we collect</h2>
+    <ul>
+      <li><strong>Enquiry form:</strong> your name, mobile number, and optionally your email address, the service you are interested in and your message.</li>
+      <li><strong>Technical data:</strong> a one-way scrambled (hashed) form of your IP address, kept for up to 24 hours only to stop spam and abuse.</li>
+      <li><strong>Usage statistics:</strong> anonymous page-view and click counts (for example, how many people tapped “Call”). We use Cloudflare Web Analytics, which does not use cookies or identify you.</li>
+    </ul>
+
+    <h2>Why we use it</h2>
+    <p>Only to respond to your enquiry by phone, WhatsApp or email, and to improve our services. We collect it with your consent, which you give by ticking the box on the form. We do not sell your data or use it for unrelated marketing.</p>
+
+    <h2>Who can see it</h2>
+    <p>Only authorised Growtick staff, through a password- and two-factor-protected admin panel. Our service providers (database hosting, email delivery, website hosting) process data on our behalf under their own security commitments.</p>
+
+    <h2>How long we keep it</h2>
+    <p>Enquiries are kept for as long as needed to serve you and for up to 24 months afterwards, unless the law requires longer. <!-- TODO(legal): confirm retention period. --></p>
+
+    <h2>Your rights</h2>
+    <p>You can ask us to see, correct or delete your personal data, or withdraw your consent at any time. To do so, contact us on <a href={telHref}>{site.phoneDisplay}</a> or message <a href={site.instagramUrl} target="_blank" rel="noopener">@{site.instagramHandle}</a>. <!-- TODO(PRD-OQ#5): add the Growtick grievance email. --></p>
+
+    <h2>Cookies</h2>
+    <p>This site does not use tracking cookies. It remembers your light/dark theme choice on your device only.</p>
+  </div>
+</Base>

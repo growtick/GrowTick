@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+import HeroArt from '../components/HeroArt.astro';
+import Icon from '../components/Icon.astro';
+import { getEntry } from 'astro:content';
+import { renderMd } from '../lib/content';
+
+const page = (await getEntry('pages', 'about'))!;
+---
+<Base title={page.data.seoTitle} description={page.data.seoDescription}>
+  <div class="wrap page-head about">
+    <div>
+      <p class="overline">About</p>
+      <h1>{page.data.title}</h1>
+      <div class="prose" set:html={renderMd(page.body ?? '')} />
+      <div class="btn-row mt">
+        <a class="btn" href="/services"><Icon name="arrow" /> Explore services</a>
+        <a class="btn btn--ghost" href="/contact#enquiry">Contact us</a>
+      </div>
+    </div>
+    <div class="about__art"><HeroArt /></div>
+  </div>
+</Base>
+
+<style>
+  .about { display: grid; gap: 2rem; }
+  @media (min-width: 900px) { .about { grid-template-columns: 1.4fr 1fr; align-items: start; } }
+  .about__art { display: flex; justify-content: center; }
+</style>

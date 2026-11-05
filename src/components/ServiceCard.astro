@@ -1,0 +1,34 @@
+---
+import Icon from './Icon.astro';
+import type { IconName } from './icons.generated';
+import type { Service } from '../lib/content';
+import { pad2 } from '../lib/content';
+
+interface Props { service: Service; enquire?: 'home' | 'contact'; headingLevel?: 'h2' | 'h3' }
+const { service, enquire = 'contact', headingLevel: H = 'h3' } = Astro.props;
+const s = service.data;
+const enquireHref = enquire === 'home' ? `#contact` : `/contact?service=${s.slug}#enquiry`;
+---
+<article class="svc">
+  <div class="svc__top">
+    <span class="svc__icon"><Icon name={s.icon as IconName} /></span>
+    <span class="svc__num" aria-hidden="true">{pad2(s.number)}</span>
+  </div>
+  <H class="svc__title"><span class="sr-only">{pad2(s.number)} </span>{s.title}</H>
+  <p class="svc__hook">{s.hook}</p>
+  <div class="svc__actions">
+    <a class="btn btn--sm btn--alt" href={`/services/${s.slug}`} aria-label={`Know more about ${s.title}`}>Know more</a>
+    <a class="btn btn--sm btn--ghost" href={enquireHref} data-enquire={s.slug} data-track="enquire" data-label={s.slug} aria-label={`Enquire about ${s.title}`}>Enquire</a>
+  </div>
+</article>
+
+<style>
+  .svc { display: flex; flex-direction: column; gap: 0.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; min-height: 15rem; }
+  .svc__top { display: flex; align-items: center; justify-content: space-between; }
+  .svc__icon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 12px; background: var(--bg); color: var(--brand); }
+  .svc__icon :global(svg) { width: 26px; height: 26px; }
+  .svc__num { font: 700 2rem/1 var(--font-display); color: var(--brand); opacity: 0.9; }
+  .svc__title { font-size: 1.15rem; margin: 0.25rem 0 0; }
+  .svc__hook { color: var(--muted); margin: 0; flex: 1; }
+  .svc__actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+</style>

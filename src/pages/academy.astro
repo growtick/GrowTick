@@ -1,0 +1,66 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { getServices, renderMd } from '../lib/content';
+import { site, whatsappChatHref } from '../config/site';
+import { breadcrumbs } from '../lib/schema';
+
+const academy = (await getServices()).filter((s) => s.data.pillar === 'skill-academy');
+
+// TODO(PRD-OQ#2): replace with real course details once Growtick confirms them.
+const courses = [
+  { name: 'Tally Prime (basic to advanced)', duration: 'TBC', batches: 'Weekday & weekend batches — TBC' },
+  { name: 'Graphic Design (Photoshop)', duration: 'TBC', batches: 'TBC' },
+  { name: 'Web & Ecommerce', duration: 'TBC', batches: 'TBC' },
+  { name: 'Video & AI workflows', duration: 'TBC', batches: 'TBC' },
+  { name: 'Computer Basics (Email, MS Office)', duration: 'TBC', batches: 'TBC' },
+  { name: 'Next-Gen Business Training', duration: 'Tailored', batches: 'One-to-one / family groups' },
+];
+---
+<Base
+  title="Skill Academy — Tally Prime, graphic design & computer courses in {city}"
+  description="Practical courses in {city}: Tally Prime, Photoshop graphic design, web & ecommerce, video & AI, computer basics and next-gen business training."
+  jsonLd={[breadcrumbs(Astro.site!, [{ name: 'Home', path: '/' }, { name: 'Skill Academy', path: '/academy' }])]}
+>
+  <div class="wrap page-head">
+    <p class="overline">Skill Academy</p>
+    <h1>Learn skills that pay off tomorrow</h1>
+    <p class="lead">Hands-on courses for students, job seekers, staff and the next generation of business owners.</p>
+  </div>
+
+  <section class="wrap section" aria-labelledby="courses-h">
+    <h2 id="courses-h">Courses, durations and batches</h2>
+    <div class="tbl" role="region" aria-labelledby="courses-h" tabindex="0">
+      <table>
+        <thead><tr><th scope="col">Course</th><th scope="col">Duration</th><th scope="col">Batches</th><th scope="col">Fees</th></tr></thead>
+        <tbody>
+          {courses.map((c) => (
+            <tr><th scope="row">{c.name}</th><td>{c.duration}</td><td>{c.batches}</td><td>{site.showCourseFees ? 'TBC' : 'On request'}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <div class="btn-row mt">
+      <a class="btn" href="/contact?service=learn-in-demand-skills#enquiry" data-track="enquire" data-label="academy"><Icon name="arrow" /> Ask about a batch</a>
+      <a class="btn btn--ghost" href={whatsappChatHref('a Skill Academy course')} target="_blank" rel="noopener" data-track="whatsapp" data-label="academy"><Icon name="whatsapp" /> WhatsApp</a>
+    </div>
+  </section>
+
+  {academy.map((s) => (
+    <section class="wrap section" aria-labelledby={`a-${s.data.slug}`}>
+      <p class="overline">Service {String(s.data.number).padStart(2, '0')}</p>
+      <h2 id={`a-${s.data.slug}`}>{s.data.title}</h2>
+      <div class="prose" set:html={renderMd(s.body ?? '')} />
+      <a href={`/services/${s.data.slug}`}>More about {s.data.title} <Icon name="arrow" class="icon inline" /></a>
+    </section>
+  ))}
+</Base>
+
+<style>
+  .tbl { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); }
+  table { width: 100%; border-collapse: collapse; min-width: 34rem; }
+  th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
+  thead th { background: var(--surface); font-family: var(--font-display); }
+  tbody tr:last-child > * { border-bottom: 0; }
+  :global(.inline) { display: inline; vertical-align: middle; }
+</style>

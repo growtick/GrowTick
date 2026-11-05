@@ -1,0 +1,118 @@
+---
+/**
+ * Infinite carousel (PRD §04). CSS scroll row + small script:
+ *  - slow continuous auto-scroll; seamless loop by appending inert clones
+ *  - pauses on hover, focus, touch, off-screen, hidden tab, and via the Pause button
+ *  - swipe (native scroll), arrows, and ←/→ keys
+ *  - prefers-reduced-motion or no JS: plain horizontal scroll row with snap
+ * Children must be <li> elements. Reused for testimonials.
+ */
+import Icon from './Icon.astro';
+interface Props { label: string; id: string; perDesktop?: 2.5 | 3.5 }
+const { label, id, perDesktop = 3.5 } = Astro.props;
+---
+<div class:list={["car", perDesktop === 2.5 ? "car--wide" : "car--narrow"]} data-carousel id={id}>
+  <div class="car__bar">
+    <button class="car__btn" type="button" data-pause aria-pressed="false" hidden>
+      <span class="car__pause">Pause</span><span class="car__play">Play</span><span class="sr-only"> auto-scroll</span>
+    </button>
+    <button class="car__btn car__arrow" type="button" data-prev aria-label="Previous"><Icon name="prev" /></button>
+    <button class="car__btn car__arrow" type="button" data-next aria-label="Next"><Icon name="next" /></button>
+  </div>
+  <div class="car__viewport" tabindex="0" role="region" aria-roledescription="carousel" aria-label={label}>
+    <ul class="car__track" role="list">
+      <slot />
+    </ul>
+  </div>
+</div>
+
+<style>
+  .car { --gap: 1rem; --per: 1.2; position: relative; }
+  @media (min-width: 640px) { .car { --per: 2.3; } }
+  @media (min-width: 1024px) { .car--narrow { --per: 3.5; } .car--wide { --per: 2.5; } }
+  .car__bar { display: flex; justify-content: flex-end; gap: 0.5rem; margin-bottom: 0.75rem; }
+  .car__btn { min-width: 44px; height: 44px; padding: 0 0.9rem; border-radius: 999px; border: 1px solid var(--border); background: var(--bg); color: var(--heading); font: 500 0.9rem var(--font-display); cursor: pointer; display: inline-grid; place-items: center; }
+  .car__arrow { padding: 0; }
+  .car__play, .car__btn[aria-pressed='true'] .car__pause { display: none; }
+  .car__btn[aria-pressed='true'] .car__play { display: inline; }
+  .car__viewport { position: relative; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; scroll-snap-type: x mandatory; padding-block: 0.25rem 0.75rem; }
+  .car__viewport::-webkit-scrollbar { display: none; }
+  .car__viewport:focus-visible { outline-offset: 4px; }
+  .car__track { display: flex; gap: var(--gap); list-style: none; margin: 0; padding: 0 var(--gutter); }
+  .car__track > :global(li) { flex: 0 0 calc((100% - (var(--per) - 1) * var(--gap)) / var(--per)); scroll-snap-align: start; display: flex; }
+  .car__track > :global(li > *) { flex: 1; }
+  /* While auto-scrolling, snap would fight the motion. */
+  :global(.car.is-auto) .car__viewport { scroll-snap-type: none; }
+</style>
+
+<script>
+  const SPEED = 28; // px per second — "slow continuous"
+  const RESUME_AFTER = 3500; // ms after a touch/arrow interaction
+
+  document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((car) => {
+    const vp = car.querySelector<HTMLElement>('.car__viewport')!;
+    const track = car.querySelector<HTMLElement>('.car__track')!;
+    const pauseBtn = car.querySelector<HTMLButtonElement>('[data-pause]')!;
+    const items = Array.from(track.children) as HTMLElement[];
+    if (!items.length) return;
+
+    const step = () => (items[0].getBoundingClientRect().width || 280) + parseFloat(getComputedStyle(track).columnGap || '16');
+    const arrow = (dir: number) => { hold(); vp.scrollBy({ left: dir * step(), behavior: reduce ? 'auto' : 'smooth' }); };
+    car.querySelector('[data-prev]')!.addEventListener('click', () => arrow(-1));
+    car.querySelector('[data-next]')!.addEventListener('click', () => arrow(1));
+    vp.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); arrow(1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); arrow(-1); }
+    });
+
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || items.length < 2) return; // plain scroll row
+
+    // Seamless loop: one inert copy of the set; when we pass it, jump back by its width.
+    for (const it of items) {
+      const c = it.cloneNode(true) as HTMLElement;
+      c.setAttribute('aria-hidden', 'true');
+      c.inert = true;
+      c.querySelectorAll('[id]').forEach((n) => n.removeAttribute('id'));
+      track.appendChild(c);
+    }
+    const setWidth = () => items[items.length - 1].offsetLeft + items[items.length - 1].offsetWidth + parseFloat(getComputedStyle(track).columnGap || '16') - items[0].offsetLeft;
+
+    let pos = vp.scrollLeft, last = 0, hovered = false, focused = false, held = false, userPaused = false, visible = true;
+    let holdTimer = 0;
+    function hold() { held = true; clearTimeout(holdTimer); holdTimer = window.setTimeout(() => { held = false; pos = vp.scrollLeft; }, RESUME_AFTER); }
+    const running = () => !hovered && !focused && !held && !userPaused && visible && !document.hidden;
+
+    pauseBtn.hidden = false;
+    pauseBtn.addEventListener('click', () => { userPaused = !userPaused; pauseBtn.setAttribute('aria-pressed', String(userPaused)); });
+    car.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') hovered = true; });
+    car.addEventListener('pointerleave', () => { hovered = false; pos = vp.scrollLeft; });
+    vp.addEventListener('focusin', () => (focused = true));
+    vp.addEventListener('focusout', () => { focused = false; pos = vp.scrollLeft; });
+    vp.addEventListener('touchstart', hold, { passive: true });
+    vp.addEventListener('wheel', hold, { passive: true });
+    new IntersectionObserver(([e]) => (visible = e.isIntersecting)).observe(vp);
+
+    // Keep manual scrolling seamless too.
+    vp.addEventListener('scroll', () => {
+      const w = setWidth();
+      if (vp.scrollLeft >= w) vp.scrollLeft -= w;
+      else if (vp.scrollLeft <= 0 && held) vp.scrollLeft += w;
+    }, { passive: true });
+
+    function frame(t: number) {
+      const dt = last ? Math.min(t - last, 64) : 0;
+      last = t;
+      const on = running();
+      car.classList.toggle('is-auto', on);
+      if (on) {
+        pos += (SPEED * dt) / 1000;
+        const w = setWidth();
+        if (pos >= w) pos -= w;
+        vp.scrollLeft = pos;
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  });
+</script>

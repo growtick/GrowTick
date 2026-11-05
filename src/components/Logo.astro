@@ -1,0 +1,36 @@
+---
+/**
+ * Placeholder Growtick logo: a "G" with a tick, plus the wordmark.
+ * Animates once on load (~1.2 s, pure CSS, no layout shift because the SVG has
+ * fixed dimensions), then stays static. Doubles as the live demo for
+ * service 10 (Logo Animation). Swap the paths when the real SVG logo arrives.
+ */
+interface Props { size?: 'sm' | 'lg'; animate?: boolean; wordmark?: boolean }
+const { size = 'sm', animate = true, wordmark = true } = Astro.props;
+const px = size === 'lg' ? 96 : 36;
+---
+<span class:list={['logo', `logo--${size}`, { 'logo--anim': animate }]}>
+  <svg class="logo__mark" width={px} height={px} viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+    <path class="logo__g" pathLength="100" d="M37.5 15.5A16 16 0 1 0 40 26H27" />
+    <path class="logo__t" pathLength="100" d="M15.5 24.5l5 5 8.5-9.5" />
+  </svg>
+  {wordmark && <span class="logo__word">GROWTICK</span>}
+</span>
+
+<style>
+  .logo { display: inline-flex; align-items: center; gap: 0.55rem; color: var(--heading); }
+  .logo__mark { flex: none; }
+  .logo__g, .logo__t { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .logo__g { stroke: var(--brand); stroke-width: 6; }
+  .logo__t { stroke: var(--accent-deco); stroke-width: 4.5; }
+  .logo__word { font: 700 1.2rem/1 var(--font-display); letter-spacing: 0.04em; }
+  .logo--lg .logo__word { font-size: clamp(2.6rem, 11vw, 4.5rem); letter-spacing: 0.02em; }
+  .logo--lg { flex-direction: column; align-items: flex-start; gap: 0.9rem; }
+  @media (min-width: 640px) { .logo--lg { flex-direction: row; align-items: center; } }
+
+  .logo--anim .logo__g { stroke-dasharray: 100; animation: logo-draw 0.75s cubic-bezier(.6,0,.3,1) both; }
+  .logo--anim .logo__t { stroke-dasharray: 100; animation: logo-draw 0.45s 0.6s ease-out both; }
+  .logo--anim .logo__word { animation: logo-word 0.5s 0.35s ease-out both; }
+  @keyframes logo-draw { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+  @keyframes logo-word { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: none; } }
+</style>

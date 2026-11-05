@@ -1,0 +1,11 @@
+---
+import Icon from './Icon.astro';
+import { whatsappShareHref } from '../config/site';
+import { cleanPath } from '../lib/content';
+interface Props { line: string; class?: string }
+const { line, class: cls = 'btn btn--ghost' } = Astro.props;
+const url = new URL(cleanPath(Astro.url.pathname), Astro.site).href;
+---
+<a class={cls} href={whatsappShareHref(url, line)} target="_blank" rel="noopener" data-track="share" data-label={cleanPath(Astro.url.pathname)}>
+  <Icon name="share" /> Share on WhatsApp
+</a>

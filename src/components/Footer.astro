@@ -1,0 +1,27 @@
+---
+import Icon from './Icon.astro';
+import { site, whatsappShareHref } from '../config/site';
+import { cleanPath } from '../lib/content';
+const pageUrl = new URL(cleanPath(Astro.url.pathname), Astro.site).href;
+const year = new Date().getFullYear();
+---
+<footer class="ftr">
+  <div class="wrap ftr__in">
+    <span class="ftr__tag">{site.tagline}</span>
+    <a href={site.instagramUrl} target="_blank" rel="noopener" data-track="instagram" data-label="footer"><Icon name="instagram" /> @{site.instagramHandle}</a>
+    <a href={whatsappShareHref(pageUrl, `${site.name} — ${site.positioning}.`)} target="_blank" rel="noopener" data-track="share" data-label="footer"><Icon name="share" /> Share on WhatsApp</a>
+    <a href="/testimonials">Testimonials</a>
+    <a href="/faq">FAQ</a>
+    <a href="/privacy">Privacy</a>
+    <span class="muted">© {year} {site.name}</span>
+  </div>
+</footer>
+
+<style>
+  .ftr { border-top: 1px solid var(--border); padding-block: 1.25rem 5.5rem; font-size: 0.9rem; }
+  .ftr__in { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 1.25rem; }
+  .ftr__tag { font: 500 0.95rem var(--font-display); color: var(--heading); flex-basis: 100%; }
+  .ftr a { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; color: var(--muted); text-decoration: none; }
+  .ftr a:hover { color: var(--brand-text); text-decoration: underline; }
+  @media (min-width: 1024px) { .ftr__tag { flex-basis: auto; margin-right: auto; } .ftr { padding-bottom: 1.25rem; } }
+</style>

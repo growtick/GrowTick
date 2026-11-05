@@ -1,0 +1,82 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import Accordion from '../../components/Accordion.astro';
+import ShareWhatsApp from '../../components/ShareWhatsApp.astro';
+import ServiceCard from '../../components/ServiceCard.astro';
+import type { IconName } from '../../components/icons.generated';
+import { getServices, getFaqs, renderMd, cityfy, pad2, pillarName, type Service } from '../../lib/content';
+import { site, telHref, whatsappChatHref } from '../../config/site';
+import { serviceSchema, faqPage, breadcrumbs } from '../../lib/schema';
+
+export async function getStaticPaths() {
+  const services = await getServices();
+  return services.map((s) => ({ params: { slug: s.data.slug }, props: { service: s, all: services } }));
+}
+interface Props { service: Service; all: Service[] }
+const { service, all } = Astro.props;
+const s = service.data;
+const faqs = (await getFaqs()).filter((f) => s.faqs.includes(f.data.id));
+const related = all.filter((x) => x.data.pillar === s.pillar && x.data.slug !== s.slug).slice(0, 3);
+const desc = cityfy(s.seoDescription);
+const base = Astro.site!;
+---
+<Base
+  title={s.seoTitle}
+  description={s.seoDescription}
+  waTopic={s.title}
+  jsonLd={[
+    serviceSchema(base, { title: s.title, description: desc, slug: s.slug, pillar: pillarName(s.pillar) }),
+    breadcrumbs(base, [{ name: 'Home', path: '/' }, { name: 'Services', path: '/services' }, { name: s.title, path: `/services/${s.slug}` }]),
+    ...(faqs.length ? [faqPage(faqs.map((f) => ({ q: f.data.question, a: f.body ?? '' })))] : []),
+  ]}
+>
+  <div class="wrap page-head">
+    <nav aria-label="Breadcrumb" class="crumbs"><a href="/services">Services</a> / <a href={`/services#${s.pillar}`}>{pillarName(s.pillar)}</a></nav>
+    <div class="svc-head">
+      <span class="svc-head__icon"><Icon name={s.icon as IconName} /></span>
+      <p class="overline">Service {pad2(s.number)} · {pillarName(s.pillar)}</p>
+    </div>
+    <h1>{s.title}</h1>
+    <p class="lead">{s.hook}</p>
+    <div class="btn-row">
+      <a class="btn" href={`/contact?service=${s.slug}#enquiry`} data-track="enquire" data-label={s.slug}><Icon name="arrow" /> Enquire</a>
+      <a class="btn btn--alt" href={telHref} data-track="call" data-label={s.slug}><Icon name="phone" /> Call</a>
+      <a class="btn btn--ghost" href={whatsappChatHref(s.title)} target="_blank" rel="noopener" data-track="whatsapp" data-label={s.slug}><Icon name="whatsapp" /> WhatsApp</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <hr class="divider" />
+    <div class="prose" set:html={renderMd(service.body ?? '')} />
+    <p><ShareWhatsApp line={`${s.title} by ${site.name} — ${s.hook}.`} /></p>
+  </div>
+
+  {faqs.length > 0 && (
+    <section class="wrap section" aria-labelledby="faq-h">
+      <h2 id="faq-h">Questions about {s.title}</h2>
+      <Accordion faqs={faqs} headingLevel="h3" />
+      <p><a href="/faq">All FAQs</a></p>
+    </section>
+  )}
+
+  {related.length > 0 && (
+    <section class="wrap section" aria-labelledby="rel-h">
+      <h2 id="rel-h">More in {pillarName(s.pillar)}</h2>
+      <ul class="grid grid--3 rel" role="list">{related.map((r) => <li><ServiceCard service={r} /></li>)}</ul>
+    </section>
+  )}
+</Base>
+
+<style>
+  .crumbs { font-size: 0.9rem; margin-bottom: 1rem; color: var(--muted); }
+  .crumbs a { display: inline-block; padding-block: 0.6rem; }
+  .svc-head { display: flex; align-items: center; gap: 0.75rem; }
+  .svc-head .overline { margin: 0; }
+  .svc-head__icon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 12px; background: var(--surface); color: var(--brand); }
+  .svc-head__icon :global(svg) { width: 26px; height: 26px; }
+  h1 { margin-top: 0.75rem; }
+  .rel { list-style: none; padding: 0; }
+  .rel > li { display: flex; }
+  .rel > li > :global(*) { flex: 1; }
+</style>

@@ -1,0 +1,43 @@
+/* Admin panel styles (loaded only on the admin route). */
+.adm-body { background: var(--surface); }
+.adm-center { min-height: 100vh; display: grid; place-content: center; text-align: center; }
+.adm-auth { max-width: 26rem; margin: 8vh auto; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow); }
+.adm-auth h1 { font-size: 1.5rem; }
+.adm-auth img.qr { width: 200px; height: 200px; background: #fff; padding: 8px; border-radius: 8px; margin: 1rem auto; }
+.adm-code { font-family: ui-monospace, Consolas, monospace; word-break: break-all; background: var(--surface); padding: 0.5rem; border-radius: 6px; font-size: 0.85rem; }
+
+.adm-top { position: sticky; top: 0; z-index: 10; background: var(--bg); border-bottom: 1px solid var(--border); }
+.adm-top__in { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; padding-block: 0.6rem; }
+.adm-top__brand { font: 700 1.1rem var(--font-display); color: var(--heading); margin-right: auto; }
+.adm-tabs { display: flex; gap: 0.25rem; overflow-x: auto; padding-bottom: 0.5rem; }
+.adm-tabs button { min-height: 40px; padding: 0 0.9rem; border-radius: 999px; border: 1px solid var(--border); background: var(--bg); cursor: pointer; white-space: nowrap; font: 500 0.9rem var(--font-display); }
+.adm-tabs button[aria-current='page'] { background: var(--btn-alt); color: var(--btn-alt-text); border-color: var(--btn-alt); }
+.adm-main { padding-block: 1.5rem 4rem; }
+.adm-panel { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+.adm-filters { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: end; margin-bottom: 1rem; }
+.adm-filters label, .adm-form label { display: grid; gap: 0.25rem; font-size: 0.85rem; font-weight: 600; }
+.adm input, .adm select, .adm textarea { min-height: 40px; padding: 0.45rem 0.6rem; border-radius: 8px; border: 1.5px solid var(--border); background: var(--bg); font-size: 0.95rem; }
+.adm textarea { min-height: 8rem; font-family: ui-monospace, Consolas, monospace; font-size: 0.88rem; }
+.adm-table-wrap { overflow-x: auto; }
+.adm table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.adm th, .adm td { text-align: left; padding: 0.55rem 0.6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+.adm th { font-family: var(--font-display); background: var(--surface); position: sticky; top: 0; }
+.adm-badge { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; background: var(--surface); border: 1px solid var(--border); }
+.adm-badge--new { background: #fef3c7; color: #78350f; border-color: #fcd34d; }
+.adm-badge--warn { background: #fce7f3; color: #9d174d; border-color: #f9a8d4; }
+.adm-form { display: grid; gap: 0.9rem; max-width: 46rem; }
+.adm-form .check { display: flex; align-items: center; gap: 0.5rem; font-weight: 500; }
+.adm-form .check input { min-height: 0; width: 20px; height: 20px; }
+.adm-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.5rem; }
+.adm-list button.item { width: 100%; text-align: left; display: flex; gap: 0.75rem; align-items: center; padding: 0.7rem 0.9rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); cursor: pointer; }
+.adm-list button.item:hover { background: var(--surface); }
+.adm-msg { padding: 0.7rem 0.9rem; border-radius: 10px; margin-bottom: 1rem; }
+.adm-msg--ok { background: var(--surface); border: 1px solid var(--brand); }
+.adm-msg--err { background: var(--surface-alt); border: 1px solid var(--accent); color: var(--text); }
+.adm-row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.adm-stat { display: grid; gap: 0.25rem; padding: 1rem; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); }
+.adm-stat b { font: 700 1.8rem var(--font-display); color: var(--heading); }
+.adm-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
+.adm pre { white-space: pre-wrap; font-size: 0.78rem; max-height: 16rem; overflow: auto; background: var(--surface); padding: 0.5rem; border-radius: 6px; }
+.adm .h2 { font-size: 1.5rem; }
+.adm .h3 { font-size: 1.15rem; }

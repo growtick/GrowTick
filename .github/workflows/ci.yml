@@ -1,0 +1,21 @@
+# Runs on every pull request and push: type check, build, PRD budgets, Lighthouse (mobile).
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - run: npx astro check
+      # CI builds from the Markdown in the repo (no database secrets needed).
+      - run: npm run build
+      - run: npm run check:budgets
+      - name: Lighthouse (mobile) — 95+ home, 90+ inner pages
+        run: npx --yes @lhci/cli@0.15.1 autorun

@@ -1,0 +1,18 @@
+---
+// Shown after a no-JavaScript form submission fails (validation, spam check or server error).
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { site, telHref, whatsappChatHref } from '../config/site';
+---
+<Base title="Enquiry not sent" description="We couldn't send your enquiry." noindex>
+  <div class="wrap page-head pb-xl">
+    <p class="overline">Enquiry not sent</p>
+    <h1>Sorry, that didn’t go through</h1>
+    <p class="lead">Please check your details and try again, or reach us directly — we’ll be glad to help.</p>
+    <div class="btn-row">
+      <a class="btn btn--ghost" href="/contact#enquiry">Try again</a>
+      <a class="btn btn--alt" href={telHref}><Icon name="phone" /> Call {site.phoneDisplay}</a>
+      <a class="btn" href={whatsappChatHref()} target="_blank" rel="noopener"><Icon name="whatsapp" /> WhatsApp</a>
+    </div>
+  </div>
+</Base>

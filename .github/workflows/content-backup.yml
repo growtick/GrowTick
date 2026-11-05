@@ -1,0 +1,31 @@
+# Weekly Markdown backup of all admin-edited content (PRD §06 "MD file backup").
+# Opens a pull request (main is protected) so the repo can rebuild the site if the database is lost.
+name: Content backup
+on:
+  schedule:
+    - cron: '30 20 * * 0'   # Sundays 20:30 UTC = Monday 02:00 IST
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - run: npm run export:md
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: content-backup
+          commit-message: 'chore(content): weekly Markdown backup from Supabase'
+          title: 'Weekly content backup'
+          body: 'Automated export of services, FAQs and testimonials from the database. Merge to keep the Markdown backup current.'
+          add-paths: content/

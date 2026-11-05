@@ -1,0 +1,52 @@
+---
+/**
+ * PLACEHOLDER hero illustration in a flat "Corporate Memphis" style using the
+ * brand palette. Replace with the licensed/custom SVG (keep it under 30 KB and
+ * keep width/height so there is no layout shift). Colours come from CSS tokens,
+ * so it has a dark variant automatically.
+ */
+---
+<svg class="art" viewBox="0 0 400 320" width="400" height="320" role="img" aria-label="Illustration: a learner at a laptop with a rising growth chart, a graduation cap and a tick">
+  <circle cx="300" cy="90" r="70" class="a-mint" />
+  <rect x="34" y="40" width="70" height="70" rx="16" class="a-pink" transform="rotate(-12 69 75)" />
+  <path d="M20 250 Q 120 190 220 240 T 390 230 L 390 320 L 20 320 Z" class="a-mint" />
+  <!-- growth bars -->
+  <rect x="236" y="170" width="28" height="60" rx="6" class="a-green" />
+  <rect x="274" y="140" width="28" height="90" rx="6" class="a-green" />
+  <rect x="312" y="100" width="28" height="130" rx="6" class="a-green" />
+  <path d="M232 150 L 288 112 L 316 124 L 360 70" class="a-stroke-mag" />
+  <path d="M346 66 L 362 68 L 360 84" class="a-stroke-mag" />
+  <!-- laptop -->
+  <rect x="80" y="150" width="130" height="84" rx="8" class="a-deep" />
+  <rect x="90" y="160" width="110" height="64" rx="4" class="a-screen" />
+  <path d="M60 236 H 230 L 220 250 H 70 Z" class="a-deep" />
+  <path d="M120 194 l12 12 26-28" class="a-stroke-green" />
+  <!-- person -->
+  <circle cx="145" cy="96" r="22" class="a-skin" />
+  <path d="M123 92 Q 140 60 168 88 Q 160 76 140 80 Z" class="a-deep" />
+  <path d="M112 152 Q 116 122 145 120 Q 176 122 180 152 Z" class="a-mag" />
+  <!-- cap -->
+  <path d="M40 160 L 70 148 L 100 160 L 70 172 Z" class="a-deep" />
+  <path d="M54 166 V 180 Q 70 190 86 180 V 166" class="a-deep" />
+  <path d="M100 160 V 180" class="a-stroke-amber" />
+  <!-- confetti -->
+  <circle cx="220" cy="40" r="7" class="a-amber" />
+  <circle cx="370" cy="190" r="6" class="a-mag" />
+  <path d="M30 120 l10 -10 M200 110 l8 8 M380 30 l-10 10" class="a-stroke-amber" />
+</svg>
+
+<style>
+  .art { width: 100%; height: auto; max-width: 440px; }
+  .a-mint { fill: var(--surface); }
+  .a-pink { fill: var(--surface-alt); }
+  .a-green { fill: var(--brand); }
+  .a-deep { fill: var(--heading); }
+  .a-screen { fill: var(--bg); }
+  .a-mag { fill: var(--accent-deco); }
+  .a-amber { fill: var(--amber); }
+  .a-skin { fill: #c98b5f; }
+  .a-stroke-mag, .a-stroke-green, .a-stroke-amber { fill: none; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+  .a-stroke-mag { stroke: var(--accent-deco); }
+  .a-stroke-green { stroke: var(--brand); }
+  .a-stroke-amber { stroke: var(--amber); stroke-width: 4; }
+</style>

@@ -1,0 +1,54 @@
+---
+import Base from '../layouts/Base.astro';
+import Carousel from '../components/Carousel.astro';
+import TestimonialCard from '../components/TestimonialCard.astro';
+import Icon from '../components/Icon.astro';
+import { getTestimonials, getServices } from '../lib/content';
+import { whatsappChatHref } from '../config/site';
+
+const items = await getTestimonials();
+const titles = new Map((await getServices()).map((s) => [s.data.slug, s.data.title]));
+---
+<Base
+  title="Testimonials — what Growtick students and clients say"
+  description="Reviews from Growtick Skill Academy students and business clients in {city}."
+>
+  <div class="wrap page-head">
+    <p class="overline">Testimonials</p>
+    <h1>What our students and clients say</h1>
+  </div>
+
+  {items.length > 0 ? (
+    <>
+      <section class="section" aria-label="Featured reviews">
+        <Carousel label="Reviews" id="reviews-carousel" perDesktop={2.5}>
+          {items.map((t) => <li><TestimonialCard t={t} serviceTitle={titles.get(t.data.service ?? '')} /></li>)}
+        </Carousel>
+      </section>
+      <section class="wrap section" aria-labelledby="all-h">
+        <h2 id="all-h">All reviews</h2>
+        <ul class="grid grid--3 list" role="list">
+          {items.map((t) => <li><TestimonialCard t={t} serviceTitle={titles.get(t.data.service ?? '')} /></li>)}
+        </ul>
+      </section>
+    </>
+  ) : (
+    <section class="wrap section">
+      <div class="card empty">
+        <h2>Reviews are coming soon</h2>
+        <p>We’re collecting feedback from our students and clients. In the meantime, we’re happy to put you in touch with people we’ve worked with.</p>
+        <div class="btn-row">
+          <a class="btn" href="/contact#enquiry"><Icon name="arrow" /> Talk to us</a>
+          <a class="btn btn--ghost" href={whatsappChatHref()} target="_blank" rel="noopener" data-track="whatsapp" data-label="testimonials-empty"><Icon name="whatsapp" /> WhatsApp</a>
+        </div>
+      </div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .list { list-style: none; padding: 0; margin: 0; }
+  .list > li { display: flex; }
+  .list > li > :global(*) { flex: 1; }
+  .empty { max-width: 40rem; }
+</style>

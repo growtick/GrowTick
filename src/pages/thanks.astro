@@ -1,0 +1,13 @@
+---
+// Shown after a no-JavaScript form submission succeeds.
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+---
+<Base title="Thank you" description="We've received your enquiry." noindex>
+  <div class="wrap page-head pb-xl">
+    <p class="overline">Enquiry sent</p>
+    <h1>Thank you!</h1>
+    <p class="lead">We’ve received your enquiry and will call you back soon.</p>
+    <a class="btn" href="/services"><Icon name="arrow" /> Back to services</a>
+  </div>
+</Base>

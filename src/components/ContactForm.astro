@@ -1,0 +1,237 @@
+---
+/**
+ * Lead form. variant "short" (home: name, phone, service) or "full" (contact page:
+ * + email, message). Works without JS (POST → /thanks or /form-error); with JS it
+ * validates inline, submits via fetch, and on failure shows Call/WhatsApp
+ * fallbacks with a Retry button. Turnstile loads only when the form is first used.
+ */
+import Icon from './Icon.astro';
+import { getServices, pad2, cleanPath } from '../lib/content';
+import { site, telHref, whatsappChatHref } from '../config/site';
+import { MESSAGE_MAX } from '../lib/lead';
+import { PUBLIC_TURNSTILE_SITE_KEY } from 'astro:env/client';
+
+interface Props { variant?: 'short' | 'full'; id?: string; preselect?: string }
+const { variant = 'short', id = 'lead', preselect = '' } = Astro.props;
+const services = await getServices();
+const full = variant === 'full';
+const f = (n: string) => `${id}-${n}`;
+---
+<form class="lead" id={id} action="/api/lead" method="post" novalidate data-lead-form data-turnstile={PUBLIC_TURNSTILE_SITE_KEY ?? ''}>
+  <div class="lead__fields">
+    <div class="fld">
+      <label for={f('name')}>Name <span aria-hidden="true">*</span></label>
+      <input id={f('name')} name="name" type="text" autocomplete="name" required maxlength="80" aria-describedby={f('name-err')} />
+      <p class="fld__err" id={f('name-err')} data-err="name"></p>
+    </div>
+    <div class="fld">
+      <label for={f('phone')}>Mobile number <span aria-hidden="true">*</span></label>
+      <input id={f('phone')} name="phone" type="tel" inputmode="tel" autocomplete="tel-national" required maxlength="20" placeholder="98765 43210" aria-describedby={f('phone-err')} />
+      <p class="fld__err" id={f('phone-err')} data-err="phone"></p>
+    </div>
+    {full && (
+      <div class="fld">
+        <label for={f('email')}>Email <span class="muted">(optional)</span></label>
+        <input id={f('email')} name="email" type="email" autocomplete="email" maxlength="120" aria-describedby={f('email-err')} />
+        <p class="fld__err" id={f('email-err')} data-err="email"></p>
+      </div>
+    )}
+    <div class="fld">
+      <label for={f('service')}>Service of interest <span aria-hidden="true">*</span></label>
+      <select id={f('service')} name="service" required aria-describedby={f('service-err')}>
+        <option value="">Choose a service…</option>
+        {services.map((s) => <option value={s.data.slug} selected={s.data.slug === preselect}>{pad2(s.data.number)} · {s.data.title}</option>)}
+        <option value="other">Other</option>
+      </select>
+      <p class="fld__err" id={f('service-err')} data-err="service"></p>
+    </div>
+    {full && (
+      <div class="fld fld--wide">
+        <label for={f('message')}>Message <span class="muted">(optional)</span></label>
+        <textarea id={f('message')} name="message" rows="4" maxlength={MESSAGE_MAX} aria-describedby={`${f('message-err')} ${f('message-count')}`}></textarea>
+        <p class="fld__hint muted" id={f('message-count')} data-count>0 / {MESSAGE_MAX}</p>
+        <p class="fld__err" id={f('message-err')} data-err="message"></p>
+      </div>
+    )}
+  </div>
+
+  <!-- Honeypot: hidden from people, tempting to bots. -->
+  <div class="hp" aria-hidden="true">
+    <label for={f('website')}>Leave this empty</label>
+    <input id={f('website')} name="website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+  <input type="hidden" name="source" value={cleanPath(Astro.url.pathname)} />
+
+  <div class="fld fld--check">
+    <input id={f('consent')} name="consent" type="checkbox" required aria-describedby={f('consent-err')} />
+    <label for={f('consent')}>I agree that Growtick may contact me about this enquiry by phone, WhatsApp or email. <a href="/privacy">Privacy notice</a></label>
+    <p class="fld__err" id={f('consent-err')} data-err="consent"></p>
+  </div>
+
+  <div class="lead__ts" data-ts-slot></div>
+  <button class="btn" type="submit" data-submit><Icon name="arrow" /> Send enquiry</button>
+
+  <div class="lead__status" role="status" aria-live="polite" tabindex="-1" data-status></div>
+  <div class="lead__fallback" data-fallback hidden>
+    <p><strong>Sorry, we couldn’t send your enquiry just now.</strong> Your details are still here — try again, or reach us directly:</p>
+    <div class="btn-row">
+      <button class="btn btn--ghost" type="button" data-retry>Try again</button>
+      <a class="btn btn--alt" href={telHref} data-track="call" data-label="form-fallback"><Icon name="phone" /> Call {site.phoneDisplay}</a>
+      <a class="btn" href={whatsappChatHref()} target="_blank" rel="noopener" data-track="whatsapp" data-label="form-fallback"><Icon name="whatsapp" /> WhatsApp</a>
+    </div>
+  </div>
+</form>
+
+<style>
+  .lead { display: grid; gap: 1rem; }
+  .lead__fields { display: grid; gap: 0.25rem 1rem; }
+  @media (min-width: 640px) { .lead__fields { grid-template-columns: 1fr 1fr; } .fld--wide { grid-column: 1 / -1; } }
+  .fld { display: grid; gap: 0.35rem; }
+  .fld label { font-weight: 600; font-size: 0.95rem; }
+  .fld input, .fld select, .fld textarea {
+    width: 100%; min-height: 48px; padding: 0.65rem 0.8rem; border-radius: 10px;
+    border: 1.5px solid var(--border); background: var(--bg); font-size: 1rem;
+  }
+  .fld textarea { resize: vertical; }
+  .fld [aria-invalid='true'] { border-color: var(--accent); }
+  .fld__err { min-height: 1.3em; margin: 0; color: var(--accent); font-size: 0.88rem; }
+  .fld__hint { margin: 0; font-size: 0.85rem; text-align: right; }
+  .fld--check { grid-template-columns: auto 1fr; align-items: start; column-gap: 0.75rem; }
+  .fld--check input { width: 24px; height: 24px; min-height: 0; margin: 0.15rem 0 0; accent-color: var(--btn); }
+  .fld--check label { font-weight: 400; }
+  .fld--check .fld__err { grid-column: 2; }
+  .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  .lead__status:empty { display: none; }
+  .lead__status { padding: 1rem; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); }
+  .lead__fallback { padding: 1rem; border-radius: 12px; background: var(--surface-alt); border: 1px solid var(--border); }
+  .lead [data-submit][disabled] { opacity: 0.6; cursor: progress; }
+</style>
+
+<script>
+  import { sanitizeLead, validateLead, MESSAGE_MAX, type LeadErrors } from '../lib/lead';
+  import { track } from '../lib/analytics';
+
+  let tsLoading: Promise<void> | null = null;
+  function loadTurnstile(): Promise<void> {
+    if (!tsLoading) tsLoading = new Promise((resolve, reject) => {
+      (window as any).__gtTs = () => resolve();
+      const s = document.createElement('script');
+      s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=__gtTs';
+      s.async = true;
+      s.onerror = () => reject(new Error('turnstile'));
+      document.head.appendChild(s);
+    });
+    return tsLoading;
+  }
+
+  document.querySelectorAll<HTMLFormElement>('[data-lead-form]').forEach((form) => {
+    const siteKey = form.dataset.turnstile;
+    const select = form.querySelector<HTMLSelectElement>('select[name=service]')!;
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const fallback = form.querySelector<HTMLElement>('[data-fallback]')!;
+    const submit = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+    const validServices = Array.from(select.options).map((o) => o.value).filter((v) => v && v !== 'other');
+    let tsWidget: string | undefined;
+
+    // Pre-select a service from ?service=slug (Enquire buttons on service pages).
+    const qs = new URLSearchParams(location.search).get('service');
+    if (qs && validServices.includes(qs)) select.value = qs;
+
+    // Enquire buttons on the same page (home carousel) pre-select + focus.
+    document.querySelectorAll<HTMLAnchorElement>('a[data-enquire][href^="#"]').forEach((a) =>
+      a.addEventListener('click', () => {
+        select.value = a.dataset.enquire!;
+        setTimeout(() => form.querySelector<HTMLInputElement>('input[name=name]')?.focus({ preventScroll: true }), 400);
+      }),
+    );
+
+    // Message counter
+    const msg = form.querySelector<HTMLTextAreaElement>('textarea[name=message]');
+    const count = form.querySelector<HTMLElement>('[data-count]');
+    msg?.addEventListener('input', () => { if (count) count.textContent = `${msg.value.length} / ${MESSAGE_MAX}`; });
+
+    // Turnstile on first interaction only, so the home page stays light.
+    if (siteKey) {
+      form.addEventListener('focusin', async () => {
+        if (tsWidget !== undefined) return;
+        tsWidget = '';
+        try {
+          await loadTurnstile();
+          tsWidget = (window as any).turnstile.render(form.querySelector('[data-ts-slot]'), {
+            sitekey: siteKey, appearance: 'interaction-only', size: 'flexible',
+          });
+        } catch { /* server will reject; fallback UI covers it */ }
+      }, { once: false });
+    }
+
+    function showErrors(errs: LeadErrors) {
+      form.querySelectorAll<HTMLElement>('[data-err]').forEach((p) => {
+        const key = p.dataset.err as keyof LeadErrors;
+        const field = form.querySelector<HTMLElement>(`[name=${key}]`);
+        p.textContent = errs[key] ?? '';
+        field?.setAttribute('aria-invalid', errs[key] ? 'true' : 'false');
+      });
+      const first = Object.keys(errs)[0];
+      if (first) form.querySelector<HTMLElement>(`[name=${first}]`)?.focus();
+    }
+
+    // Re-validate a field when the visitor fixes it.
+    form.addEventListener('change', (e) => {
+      const el = e.target as HTMLInputElement;
+      if (el.getAttribute('aria-invalid') !== 'true') return;
+      const errs = validateLead(sanitizeLead(readForm()), validServices);
+      const p = form.querySelector<HTMLElement>(`[data-err=${el.name}]`);
+      if (p && !errs[el.name as keyof LeadErrors]) { p.textContent = ''; el.setAttribute('aria-invalid', 'false'); }
+    });
+
+    function readForm(): Record<string, unknown> {
+      const fd = new FormData(form);
+      const o: Record<string, unknown> = Object.fromEntries(fd.entries());
+      o.consent = fd.get('consent') === 'on';
+      return o;
+    }
+
+    async function send() {
+      const raw = readForm();
+      const errs = validateLead(sanitizeLead(raw), validServices);
+      if (Object.keys(errs).length) { showErrors(errs); return; }
+      showErrors({});
+      fallback.hidden = true;
+      status.textContent = 'Sending…';
+      submit.disabled = true;
+      try {
+        if (siteKey && !raw['cf-turnstile-response']) {
+          await loadTurnstile().catch(() => {});
+          await new Promise((r) => setTimeout(r, 800));
+          raw['cf-turnstile-response'] = new FormData(form).get('cf-turnstile-response') ?? '';
+        }
+        const res = await fetch('/api/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(raw),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok) {
+          track('form_submit', String(raw.service ?? ''));
+          form.querySelector('.lead__fields')!.remove();
+          form.querySelectorAll('.fld--check, [data-submit], .lead__ts').forEach((n) => n.remove());
+          status.innerHTML = '<strong>Thank you!</strong> We’ve received your enquiry and will call you back soon. Need us sooner? Use the WhatsApp button.';
+          status.focus?.();
+          return;
+        }
+        if (res.status === 400 && data.errors) { status.textContent = ''; showErrors(data.errors); return; }
+        if (res.status === 429) { status.textContent = 'You’ve sent several enquiries in a short time. Please call or WhatsApp us instead.'; fallback.hidden = false; return; }
+        throw new Error(String(res.status));
+      } catch {
+        status.textContent = '';
+        fallback.hidden = false;
+        if (tsWidget) (window as any).turnstile?.reset(tsWidget);
+      } finally {
+        submit.disabled = false;
+      }
+    }
+
+    form.addEventListener('submit', (e) => { e.preventDefault(); send(); });
+    form.querySelector('[data-retry]')!.addEventListener('click', send);
+  });
+</script>

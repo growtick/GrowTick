@@ -1,0 +1,74 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import ContactForm from '../components/ContactForm.astro';
+import { site, telHref, whatsappChatHref } from '../config/site';
+import { localBusiness } from '../lib/schema';
+
+const a = site.address;
+const addressLine = [a.street, a.locality, a.city, a.postalCode].filter(Boolean).join(', ');
+---
+<Base
+  title="Contact Growtick — call, WhatsApp or send an enquiry"
+  description={`Call ${site.phoneDisplay}, WhatsApp or send an enquiry to Growtick in {city}. We'll call you back.`}
+  jsonLd={[localBusiness(Astro.site!)]}
+>
+  <div class="wrap page-head">
+    <p class="overline">Contact</p>
+    <h1>Let’s talk</h1>
+    <p class="lead">Tell us what you need and we’ll call you back — or reach us directly.</p>
+  </div>
+
+  <div class="wrap contact">
+    <section class="card" id="enquiry" aria-labelledby="form-h">
+      <h2 id="form-h">Send an enquiry</h2>
+      <ContactForm variant="full" id="contact-lead" />
+    </section>
+
+    <aside aria-label="Other ways to reach us">
+      <ul class="channels">
+        <li><a href={telHref} data-track="call" data-label="contact"><Icon name="phone" /><span><strong>{site.phoneDisplay}</strong><br /><span class="muted">{site.contactName}</span></span></a></li>
+        <li><a href={whatsappChatHref()} target="_blank" rel="noopener" data-track="whatsapp" data-label="contact"><Icon name="whatsapp" /><span><strong>WhatsApp chat</strong><br /><span class="muted">Usually replies the same day</span></span></a></li>
+        <li><a href={site.instagramUrl} target="_blank" rel="noopener" data-track="instagram" data-label="contact"><Icon name="instagram" /><span><strong>@{site.instagramHandle}</strong><br /><span class="muted">Instagram</span></span></a></li>
+        {site.googleBusinessUrl && <li><a href={site.googleBusinessUrl} target="_blank" rel="noopener"><Icon name="pin" /><span><strong>Google Business Profile</strong><br /><span class="muted">Reviews and directions</span></span></a></li>}
+      </ul>
+      <h2 class="h3">Address & hours</h2>
+      <p>{addressLine || <span class="muted">Address coming soon — {a.city}</span>}<br />{site.hours}</p>
+
+      <div class="map" data-map={site.mapEmbedUrl}>
+        {site.mapEmbedUrl ? (
+          <button class="btn btn--ghost" type="button" data-load-map><Icon name="pin" /> Show map</button>
+        ) : (
+          <p class="muted"><Icon name="pin" class="icon inline" /> Map will appear once the office address is confirmed.</p>
+        )}
+      </div>
+    </aside>
+  </div>
+</Base>
+
+<style>
+  .contact { display: grid; gap: 2rem; padding-bottom: 3rem; }
+  @media (min-width: 900px) { .contact { grid-template-columns: 1.5fr 1fr; align-items: start; } }
+  .contact .card { background: var(--bg); }
+  .channels { list-style: none; padding: 0; margin: 0 0 1.5rem; display: grid; gap: 0.5rem; }
+  .channels a { display: flex; gap: 0.9rem; align-items: center; padding: 0.75rem; border-radius: 12px; border: 1px solid var(--border); text-decoration: none; color: var(--text); }
+  .channels a:hover { background: var(--surface); }
+  .channels :global(svg) { width: 28px; height: 28px; color: var(--brand); }
+  .h3 { font-size: 1.2rem; }
+  .map { aspect-ratio: 4 / 3; display: grid; place-items: center; border-radius: var(--radius); background: var(--surface); border: 1px dashed var(--border); text-align: center; padding: 1rem; }
+  .map :global(iframe) { width: 100%; height: 100%; border: 0; border-radius: var(--radius); }
+  :global(.inline) { display: inline; vertical-align: middle; }
+</style>
+
+<script>
+  // Map embed only on request: keeps third-party scripts off the page by default.
+  document.querySelector('[data-load-map]')?.addEventListener('click', (e) => {
+    const box = (e.currentTarget as HTMLElement).closest<HTMLElement>('.map')!;
+    const f = document.createElement('iframe');
+    f.src = box.dataset.map!;
+    f.title = 'Growtick location on Google Maps';
+    f.loading = 'lazy';
+    f.referrerPolicy = 'no-referrer-when-downgrade';
+    box.replaceChildren(f);
+  });
+</script>

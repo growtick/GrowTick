@@ -1,0 +1,100 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { pillars, site, telHref } from '../config/site';
+import { cleanPath } from '../lib/content';
+
+const path = cleanPath(Astro.url.pathname);
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/services', label: 'Services', sub: true },
+  { href: '/academy', label: 'Skill Academy' },
+  { href: '/testimonials', label: 'Testimonials' },
+  { href: '/faq', label: 'FAQ' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+];
+const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+<header class="hdr">
+  <div class="wrap hdr__in">
+    <a href="/" class="hdr__brand" aria-label="Growtick home"><Logo size="sm" /></a>
+
+    <nav class="nav" id="site-nav" aria-label="Main">
+      <ul class="nav__list">
+        {links.map((l) => (
+          <li class:list={['nav__item', { 'has-sub': l.sub }]}>
+            <a href={l.href} class="nav__link" aria-current={isCurrent(l.href) ? 'page' : undefined}>{l.label}</a>
+            {l.sub && (
+              <>
+                <button class="nav__subtoggle" type="button" aria-expanded="false" aria-controls="nav-sub-services">
+                  <Icon name="down" /><span class="sr-only">Show service groups</span>
+                </button>
+                <ul class="nav__sub" id="nav-sub-services">
+                  {pillars.map((p) => (
+                    <li><a href={`/services#${p.id}`}><Icon name={p.icon} /> {p.name}</a></li>
+                  ))}
+                  <li><a href="/services"><Icon name="arrow" /> All 19 services</a></li>
+                </ul>
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="hdr__actions">
+      <button class="iconbtn" type="button" id="theme-toggle" aria-label="Dark mode" aria-pressed="false">
+        <Icon name="moon" class="icon theme-moon" /><Icon name="sun" class="icon theme-sun" />
+      </button>
+      <a class="btn btn--sm" href={telHref} data-track="call" data-label="header" aria-label={`Call ${site.phoneDisplay}`}>
+        <Icon name="phone" /><span>Call</span>
+      </a>
+      <button class="iconbtn menu-btn" type="button" id="menu-toggle" aria-expanded="false" aria-controls="site-nav">
+        <Icon name="menu" class="icon menu-open" /><Icon name="close" class="icon menu-close" /><span class="sr-only">Menu</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+  /* Solid background: backdrop-filter would trap the fixed mobile menu inside the header. */
+  .hdr { position: sticky; top: 0; z-index: 40; background: var(--bg); border-bottom: 1px solid var(--border); }
+  .hdr__in { display: flex; align-items: center; gap: 1rem; min-height: 64px; }
+  .hdr__brand { text-decoration: none; display: inline-flex; min-height: 44px; align-items: center; }
+  .hdr__actions { margin-left: auto; display: flex; align-items: center; gap: 0.5rem; }
+  .iconbtn { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 999px; border: 1px solid var(--border); background: transparent; color: var(--heading); cursor: pointer; }
+  :global(.theme-sun), :global([data-theme='dark'] .theme-moon) { display: none; }
+  :global([data-theme='dark'] .theme-sun) { display: block; }
+  :global(.menu-close), :global(.nav-open .menu-open) { display: none; }
+  :global(.nav-open .menu-close) { display: block; }
+
+  /* Mobile: full-screen menu */
+  .nav { position: fixed; inset: 64px 0 0; background: var(--bg); padding: 1rem var(--gutter) 2rem; overflow-y: auto; display: none; }
+  :global(.nav-open) .nav { display: block; }
+  :global(.nav-open) { overflow: hidden; }
+  .nav__list, .nav__sub { list-style: none; margin: 0; padding: 0; }
+  .nav__item { display: flex; flex-wrap: wrap; align-items: center; border-bottom: 1px solid var(--border); }
+  .nav__link { flex: 1; display: flex; align-items: center; min-height: 56px; font: 500 1.25rem var(--font-display); color: var(--heading); text-decoration: none; }
+  .nav__link[aria-current='page'] { color: var(--brand-text); }
+  .nav__subtoggle { width: 44px; height: 44px; border: 0; background: none; color: var(--heading); cursor: pointer; display: grid; place-items: center; }
+  .nav__subtoggle[aria-expanded='true'] :global(svg) { transform: rotate(180deg); }
+  .nav__sub { flex-basis: 100%; display: none; padding-bottom: 0.75rem; }
+  .nav__subtoggle[aria-expanded='true'] + .nav__sub { display: block; }
+  .nav__sub a { display: flex; gap: 0.6rem; align-items: center; min-height: 44px; padding-left: 0.5rem; color: var(--text); text-decoration: none; }
+  .nav__sub :global(svg) { color: var(--brand); }
+
+  @media (min-width: 1024px) {
+    .menu-btn { display: none; }
+    .nav { position: static; display: block; padding: 0; background: none; overflow: visible; }
+    .nav__list { display: flex; gap: 0.25rem; }
+    .nav__item { border: 0; position: relative; flex-wrap: nowrap; }
+    .nav__link { min-height: 44px; padding: 0 0.6rem; font-size: 0.95rem; }
+    .nav__subtoggle { width: 28px; margin-left: -0.5rem; }
+    .nav__sub { position: absolute; top: 100%; left: 0; min-width: 15rem; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); padding: 0.5rem; }
+    .has-sub:hover .nav__sub, .has-sub:focus-within .nav__sub { display: block; }
+    .nav__sub a { padding: 0 0.6rem; border-radius: 8px; }
+    .nav__sub a:hover { background: var(--surface); }
+  }
+  @media (max-width: 380px) { .hdr__actions .btn span { display: none; } }
+</style>

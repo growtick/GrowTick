@@ -1,0 +1,26 @@
+---
+import Icon from './Icon.astro';
+import type { Faq } from '../lib/content';
+import { renderMd } from '../lib/content';
+interface Props { faqs: Faq[]; headingLevel?: 'h2' | 'h3' }
+const { faqs, headingLevel: H = 'h2' } = Astro.props;
+---
+<div class="acc">
+  {faqs.map((f) => (
+    <details class="acc__item" id={f.data.id}>
+      <summary><H class="acc__q">{f.data.question}</H><Icon name="down" class="icon acc__chev" /></summary>
+      <div class="acc__a prose" set:html={renderMd(f.body ?? '')} />
+    </details>
+  ))}
+</div>
+
+<style>
+  .acc { display: grid; gap: 0.75rem; }
+  .acc__item { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+  summary { list-style: none; display: flex; align-items: center; gap: 1rem; min-height: 56px; padding: 0.75rem 1.1rem; cursor: pointer; }
+  summary::-webkit-details-marker { display: none; }
+  .acc__q { flex: 1; margin: 0; font-size: 1.05rem; }
+  :global(.acc__chev) { color: var(--brand); transition: transform 0.2s ease; }
+  details[open] :global(.acc__chev) { transform: rotate(180deg); }
+  .acc__a { padding: 0 1.1rem 1rem; }
+</style>

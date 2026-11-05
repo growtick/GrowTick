@@ -1,0 +1,12 @@
+// Cloudflare Worker config. Astro's adapter merges this into dist/server/wrangler.json at build.
+// Secrets (SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY, …) are set in the Cloudflare dashboard
+// or with `npx wrangler secret put NAME` — never here.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "growtick-site",
+  "compatibility_date": "2026-11-01",
+  "observability": { "enabled": true },
+  "vars": {
+    "SITE_URL": "https://www.growtick.in"
+  }
+}

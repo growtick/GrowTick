@@ -1,0 +1,75 @@
+---
+import Base from '../../layouts/Base.astro';
+import ServiceCard from '../../components/ServiceCard.astro';
+import Icon from '../../components/Icon.astro';
+import { getServices } from '../../lib/content';
+import { pillars } from '../../config/site';
+import { breadcrumbs } from '../../lib/schema';
+
+const services = await getServices();
+const groups = pillars.map((p) => ({ ...p, items: services.filter((s) => s.data.pillar === p.id) })).filter((g) => g.items.length);
+---
+<Base
+  title="Services — training, websites, GST, printing & gifting in {city}"
+  description="All 19 Growtick services in 5 pillars: Skill Academy, Tech & Finance, Web & Digital, Creative & B2B and Trademark IP, in {city}."
+  jsonLd={[breadcrumbs(Astro.site!, [{ name: 'Home', path: '/' }, { name: 'Services', path: '/services' }])]}
+>
+  <div class="wrap page-head">
+    <p class="overline">Services</p>
+    <h1>19 services, one partner</h1>
+    <p class="lead">Practical training, digital growth, finance and automation — pick a pillar or browse them all.</p>
+  </div>
+
+  <div class="wrap filters" data-filters>
+    <fieldset>
+      <legend class="sr-only">Filter by pillar</legend>
+      <input type="radio" name="pillar" id="f-all" value="all" checked /><label for="f-all">All</label>
+      {groups.map((g) => (
+        <>
+          <input type="radio" name="pillar" id={`f-${g.id}`} value={g.id} /><label for={`f-${g.id}`}><Icon name={g.icon} /> {g.name}</label>
+        </>
+      ))}
+    </fieldset>
+
+    {groups.map((g) => (
+      <section class="pillar section" id={g.id} data-pillar={g.id} aria-labelledby={`h-${g.id}`}>
+        <h2 id={`h-${g.id}`}><Icon name={g.icon} /> {g.name}</h2>
+        <ul class="grid grid--3" role="list">
+          {g.items.map((s) => <li><ServiceCard service={s} /></li>)}
+        </ul>
+      </section>
+    ))}
+  </div>
+</Base>
+
+<style>
+  fieldset { border: 0; padding: 0; margin: 0 0 0.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  fieldset input { position: absolute; opacity: 0; pointer-events: none; }
+  fieldset label { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; padding: 0 1rem; border-radius: 999px; border: 1.5px solid var(--border); cursor: pointer; font: 500 0.95rem var(--font-display); color: var(--heading); }
+  fieldset input:checked + label { background: var(--btn-alt); color: var(--btn-alt-text); border-color: var(--btn-alt); }
+  fieldset input:focus-visible + label { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .pillar { padding-block: 1.5rem; }
+  .pillar h2 { display: flex; align-items: center; gap: 0.6rem; font-size: 1.4rem; }
+  .pillar h2 :global(svg) { color: var(--brand); }
+  ul { list-style: none; padding: 0; margin: 0; }
+  ul > li { display: flex; }
+  ul > li > :global(*) { flex: 1; }
+  /* CSS-only filtering */
+  .filters:has(input[value]:not([value='all']):checked) .pillar { display: none; }
+  .filters:has(#f-skill-academy:checked) [data-pillar='skill-academy'],
+  .filters:has(#f-tech-finance:checked) [data-pillar='tech-finance'],
+  .filters:has(#f-web-digital:checked) [data-pillar='web-digital'],
+  .filters:has(#f-creative-b2b:checked) [data-pillar='creative-b2b'],
+  .filters:has(#f-trademark-ip:checked) [data-pillar='trademark-ip'] { display: block; }
+</style>
+
+<script>
+  // Header dropdown links use /services#pillar-id → select that chip.
+  const apply = () => {
+    const id = location.hash.slice(1);
+    const r = document.getElementById(`f-${id}`) as HTMLInputElement | null;
+    if (r) { r.checked = true; document.getElementById(id)?.scrollIntoView(); }
+  };
+  apply();
+  addEventListener('hashchange', apply);
+</script>

@@ -1,0 +1,30 @@
+---
+import Icon from './Icon.astro';
+import type { Testimonial } from '../lib/content';
+interface Props { t: Testimonial; serviceTitle?: string }
+const { t, serviceTitle } = Astro.props;
+const d = t.data;
+---
+<figure class="tst">
+  {d.sample && <p class="tst__sample">Sample — not shown on the live site</p>}
+  {d.rating && (
+    <p class="tst__stars" aria-label={`${d.rating} out of 5 stars`}>
+      {Array.from({ length: 5 }, (_, i) => <Icon name="star" class:list={['icon', { on: i < d.rating! }]} />)}
+    </p>
+  )}
+  <blockquote>{t.body?.trim()}</blockquote>
+  <figcaption>
+    {d.photo && <img src={d.photo} alt="" width="44" height="44" loading="lazy" decoding="async" />}
+    <span><strong>{d.name}</strong><br /><span class="muted">{d.role}{serviceTitle && ` · ${serviceTitle}`}</span></span>
+  </figcaption>
+</figure>
+
+<style>
+  .tst { margin: 0; display: flex; flex-direction: column; gap: 0.75rem; background: var(--surface-alt); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+  .tst__sample { margin: 0; font-size: 0.8rem; font-weight: 600; color: var(--accent); }
+  .tst__stars { display: flex; gap: 2px; margin: 0; color: var(--border); }
+  .tst__stars :global(.on) { color: var(--overline); fill: currentColor; }
+  blockquote { margin: 0; flex: 1; font-size: 1.05rem; }
+  figcaption { display: flex; align-items: center; gap: 0.75rem; font-size: 0.92rem; }
+  img { border-radius: 50%; object-fit: cover; }
+</style>

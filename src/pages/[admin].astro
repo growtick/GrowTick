@@ -1,0 +1,39 @@
+---
+/**
+ * Admin panel at a non-obvious URL: /<ADMIN_PATH> (set as a secret, e.g. "gt-console-7f3k9").
+ * Any other single-segment path falls through to the 404 page.
+ */
+import '../styles/global.css';
+import '../admin/admin.css';
+import AdminApp from '../admin/AdminApp';
+import { ADMIN_PATH } from 'astro:env/server';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from 'astro:env/client';
+import { getServices } from '../lib/content';
+
+export const prerender = false;
+
+const ok = Boolean(ADMIN_PATH && ADMIN_PATH.length >= 8 && Astro.params.admin === ADMIN_PATH);
+if (!ok) return new Response(null, { status: 404 });
+
+Astro.response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+Astro.response.headers.set('Cache-Control', 'no-store');
+const services = (await getServices()).map((s) => ({ slug: s.data.slug, title: s.data.title, number: s.data.number }));
+---
+<!doctype html>
+<html lang="en-IN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Growtick Admin</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline src="/admin-theme.js"></script>
+  </head>
+  <body class="adm-body">
+    {PUBLIC_SUPABASE_URL && PUBLIC_SUPABASE_ANON_KEY ? (
+      <AdminApp client:only="preact" supabaseUrl={PUBLIC_SUPABASE_URL} anonKey={PUBLIC_SUPABASE_ANON_KEY} services={services} />
+    ) : (
+      <main class="wrap adm-center"><h1>Admin not configured</h1><p>Set PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY (see README).</p></main>
+    )}
+  </body>
+</html>

@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import Accordion from '../components/Accordion.astro';
+import Icon from '../components/Icon.astro';
+import { getFaqs } from '../lib/content';
+import { faqPage } from '../lib/schema';
+import { whatsappChatHref } from '../config/site';
+
+const faqs = await getFaqs();
+---
+<Base
+  title="FAQ — courses, website hosting, GST notices, trademarks"
+  description="Answers about Growtick courses and certificates, website hosting, Google Business Profile, GST notices, trademark registration, printing and gifting."
+  jsonLd={[faqPage(faqs.map((f) => ({ q: f.data.question, a: f.body ?? '' })))]}
+>
+  <div class="wrap page-head">
+    <p class="overline">FAQ</p>
+    <h1>Frequently asked questions</h1>
+  </div>
+  <div class="wrap section pt-0">
+    <div class="prose prose--wide"><Accordion faqs={faqs} /></div>
+    <p class="mt">Didn’t find your answer?</p>
+    <div class="btn-row">
+      <a class="btn" href="/contact#enquiry"><Icon name="arrow" /> Ask us</a>
+      <a class="btn btn--ghost" href={whatsappChatHref('a question')} target="_blank" rel="noopener" data-track="whatsapp" data-label="faq"><Icon name="whatsapp" /> WhatsApp</a>
+    </div>
+  </div>
+</Base>

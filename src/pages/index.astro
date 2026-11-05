@@ -1,0 +1,79 @@
+---
+/** Home: three sections only (PRD §03) — hero, services carousel, contact. */
+import Base from '../layouts/Base.astro';
+import Logo from '../components/Logo.astro';
+import HeroArt from '../components/HeroArt.astro';
+import Icon from '../components/Icon.astro';
+import Carousel from '../components/Carousel.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import ContactForm from '../components/ContactForm.astro';
+import { getServices } from '../lib/content';
+import { site, telHref, whatsappChatHref } from '../config/site';
+import { localBusiness } from '../lib/schema';
+
+const services = await getServices();
+---
+<Base
+  title={`${site.name} — Skill Academy & 360° Corporate Solutions in {city}`}
+  description={`Tally Prime courses, websites, Google Business listing, GST notice replies, printing and corporate gifting in {city}. ${site.tagline}.`}
+  jsonLd={[localBusiness(Astro.site!)]}
+>
+  <section class="hero wrap" aria-labelledby="hero-title">
+    <div class="hero__copy">
+      <h1 id="hero-title"><Logo size="lg" /><span class="sr-only"> — {site.positioning}</span></h1>
+      <p class="hero__pos">{site.positioning}</p>
+      <p class="lead">Practical training, digital growth, finance and automation — under one roof.</p>
+      <div class="btn-row">
+        <a class="btn btn--alt" href={telHref} data-track="call" data-label="hero"><Icon name="phone" /> Call Now</a>
+        <a class="btn" href={whatsappChatHref()} target="_blank" rel="noopener" data-track="whatsapp" data-label="hero"><Icon name="whatsapp" /> WhatsApp</a>
+      </div>
+    </div>
+    <div class="hero__art"><HeroArt /></div>
+  </section>
+
+  <section class="section services" aria-labelledby="svc-title">
+    <div class="wrap">
+      <p class="overline">19 services · 5 pillars</p>
+      <h2 id="svc-title">Everything your career or business needs</h2>
+    </div>
+    <div class="wrap wrap--bleed">
+      <Carousel label="Growtick services" id="services-carousel">
+        {services.map((s) => <li><ServiceCard service={s} enquire="home" /></li>)}
+      </Carousel>
+    </div>
+    <div class="wrap"><a class="viewall" href="/services">View all services <Icon name="arrow" /></a></div>
+  </section>
+
+  <section class="section contact" id="contact" aria-labelledby="contact-title" data-hide-fab>
+    <div class="wrap contact__in">
+      <div>
+        <p class="overline">Talk to us</p>
+        <h2 id="contact-title">Get a call back</h2>
+        <p class="muted">Leave your number and we'll call you — or reach us directly.</p>
+        <ul class="channels">
+          <li><a href={telHref} data-track="call" data-label="home-contact"><Icon name="phone" /> {site.phoneDisplay} ({site.contactName})</a></li>
+          <li><a href={whatsappChatHref()} target="_blank" rel="noopener" data-track="whatsapp" data-label="home-contact"><Icon name="whatsapp" /> WhatsApp chat</a></li>
+          <li><a href={site.instagramUrl} target="_blank" rel="noopener" data-track="instagram" data-label="home-contact"><Icon name="instagram" /> Instagram @{site.instagramHandle}</a></li>
+        </ul>
+      </div>
+      <div class="card"><ContactForm variant="short" id="home-lead" /></div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { display: grid; gap: 1.5rem; align-items: center; padding-block: clamp(2rem, 6vw, 4rem) 1rem; }
+  @media (min-width: 900px) { .hero { grid-template-columns: 1.2fr 1fr; } }
+  .hero h1 { margin: 0 0 0.75rem; }
+  .hero__pos { font: 500 clamp(1.15rem, 3vw, 1.5rem)/1.3 var(--font-display); color: var(--brand-text); margin-bottom: 0.5rem; }
+  .hero__art { display: flex; justify-content: center; }
+  .wrap--bleed { padding-inline: 0; }
+  @media (min-width: 1024px) { .wrap--bleed { padding-inline: var(--gutter); } }
+  .viewall { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; margin-top: 0.75rem; font: 500 1rem var(--font-display); }
+  .contact { background: var(--surface); }
+  .contact .card { background: var(--bg); }
+  .contact__in { display: grid; gap: 2rem; }
+  @media (min-width: 900px) { .contact__in { grid-template-columns: 1fr 1.3fr; align-items: start; } }
+  .channels { list-style: none; padding: 0; margin: 1rem 0 0; }
+  .channels a { display: inline-flex; align-items: center; gap: 0.6rem; min-height: 44px; font-weight: 600; text-decoration: none; }
+</style>
