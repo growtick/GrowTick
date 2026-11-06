@@ -17,7 +17,7 @@ export const site = {
   /** E.164 without "+" — used for tel: and wa.me links. */
   phoneE164: '919513059059',
   phoneDisplay: '+91 95130 59059',
-  whatsappGreeting: "Hi Growtick, I'm interested in",
+  whatsappGreeting: "Hi Growtick, I'm interested in the following services ",
   instagramHandle: 'growtick.in',
   instagramUrl: 'https://www.instagram.com/growtick.in',
 
