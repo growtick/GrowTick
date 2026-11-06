@@ -14,7 +14,7 @@
     "assert": {
       "assertMatrix": [
         {
-          "matchingUrlPattern": "index\.html$",
+          "matchingUrlPattern": "index\\.html$",
           "assertions": {
             "categories:performance": ["error", { "minScore": 0.95 }],
             "categories:accessibility": ["error", { "minScore": 0.95 }],
@@ -23,7 +23,7 @@
           }
         },
         {
-          "matchingUrlPattern": "^(?!.*index\.html$).*",
+          "matchingUrlPattern": "^(?!.*index\\.html$).*",
           "assertions": {
             "categories:performance": ["error", { "minScore": 0.9 }],
             "categories:accessibility": ["error", { "minScore": 0.9 }],
