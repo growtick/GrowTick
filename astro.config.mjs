@@ -44,12 +44,15 @@ export default defineConfig({
       // Public (safe in browser)
       PUBLIC_SUPABASE_URL: envField.string({ context: 'client', access: 'public', optional: true }),
       PUBLIC_SUPABASE_ANON_KEY: envField.string({ context: 'client', access: 'public', optional: true }),
-      PUBLIC_TURNSTILE_SITE_KEY: envField.string({ context: 'client', access: 'public', optional: true }),
+      // Public widget site key; override per environment if needed.
+      PUBLIC_TURNSTILE_SITE_KEY: envField.string({ context: 'client', access: 'public', optional: true, default: '0x4AAAAAAF1oJauByyrcQjqK' }),
       PUBLIC_CF_ANALYTICS_TOKEN: envField.string({ context: 'client', access: 'public', optional: true }),
       // Server secrets (never shipped to the browser)
       SUPABASE_URL: envField.string({ context: 'server', access: 'secret', optional: true }),
       SUPABASE_SERVICE_ROLE_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
       TURNSTILE_SECRET_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
+      // Comma-separated hostnames a Turnstile token may come from (e.g. "www.growtick.in,growtick.in").
+      TURNSTILE_HOSTNAMES: envField.string({ context: 'server', access: 'secret', optional: true }),
       RESEND_API_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
       ALERT_EMAIL_TO: envField.string({ context: 'server', access: 'secret', optional: true }),
       ALERT_EMAIL_FROM: envField.string({ context: 'server', access: 'secret', optional: true }),

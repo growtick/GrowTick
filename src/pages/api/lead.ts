@@ -5,7 +5,7 @@
  */
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
-import { TURNSTILE_SECRET_KEY, IP_HASH_SALT } from 'astro:env/server';
+import { TURNSTILE_SECRET_KEY, TURNSTILE_HOSTNAMES, IP_HASH_SALT } from 'astro:env/server';
 import { sanitizeLead, validateLead } from '../../lib/lead';
 import { serviceDb, json, sameOrigin, sha256, clientIp } from '../../lib/server/db';
 import { sendEmail, reportError } from '../../lib/server/notify';
@@ -13,6 +13,32 @@ import { sendEmail, reportError } from '../../lib/server/notify';
 export const prerender = false;
 
 const MAX_BODY = 8 * 1024;
+const TURNSTILE_ACTION = 'lead'; // must match `action` in ContactForm's turnstile.render()
+
+/**
+ * Checks a Turnstile token with Cloudflare (single use). Also checks the token was
+ * issued for this form (action) on one of our hostnames. Without TURNSTILE_HOSTNAMES set,
+ * it uses this request's own hostname (sameOrigin() has already checked it).
+ */
+async function verifyTurnstile(token: unknown, ip: string, request: Request): Promise<boolean> {
+  if (typeof token !== 'string' || token.length === 0 || token.length > 2048) return false;
+  const hostnames = new Set(
+    (TURNSTILE_HOSTNAMES ?? new URL(request.url).hostname).split(',').map((h) => h.trim()).filter(Boolean),
+  );
+  try {
+    const r = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      signal: AbortSignal.timeout(10_000),
+      body: new URLSearchParams({ secret: TURNSTILE_SECRET_KEY!, response: token, remoteip: ip }),
+    });
+    if (!r.ok) return false;
+    const v = (await r.json()) as { success?: boolean; action?: string; hostname?: string };
+    return v.success === true && v.action === TURNSTILE_ACTION && hostnames.has(v.hostname ?? '');
+  } catch {
+    return false;
+  }
+}
 
 export const POST: APIRoute = async ({ request, clientAddress, redirect }) => {
   const wantsJson = (request.headers.get('accept') ?? '').includes('application/json');
@@ -42,14 +68,11 @@ export const POST: APIRoute = async ({ request, clientAddress, redirect }) => {
   const ip = clientIp(request, clientAddress);
 
   if (TURNSTILE_SECRET_KEY) {
-    const form = new FormData();
-    form.append('secret', TURNSTILE_SECRET_KEY);
-    form.append('response', String(raw['cf-turnstile-response'] ?? ''));
-    form.append('remoteip', ip);
-    const v = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', { method: 'POST', body: form })
-      .then((r) => r.json() as Promise<{ success: boolean }>)
-      .catch(() => ({ success: false }));
-    if (!v.success) return fail(403, { error: 'captcha' });
+    if (!(await verifyTurnstile(raw['cf-turnstile-response'], ip, request))) return fail(403, { error: 'captcha' });
+  } else if (!import.meta.env.DEV) {
+    // Fail closed: without the secret we can't tell people from bots.
+    await reportError('api/lead', new Error('TURNSTILE_SECRET_KEY not configured'));
+    return fail(503, { error: 'unavailable' });
   }
 
   const db = serviceDb();

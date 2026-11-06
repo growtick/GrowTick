@@ -97,7 +97,10 @@ SVGs, keep the same width/height, then run `node scripts/build-favicons.mjs`. Co
 
 ### 3. Cloudflare
 1. Add the domain; at the registrar turn on **transfer lock** and **auto-renew**.
-2. Turnstile → add widget (mode: *Invisible* or *Managed*) → site key + secret.
+2. Turnstile: the widget already exists (site key `0x4AAAAAAF1oJauByyrcQjqK`, the built-in default). Its domain list
+   must include `www.growtick.in`, `growtick.in`, `localhost` and `127.0.0.1`. Set its secret as the `TURNSTILE_SECRET_KEY`
+   Worker secret. Without it, production refuses all leads. `TURNSTILE_HOSTNAMES` (in `wrangler.jsonc`) lists the
+   hostnames tokens are accepted from.
 3. Web Analytics → add site → token.
 4. Create an API token with **Workers Scripts: Edit** (for GitHub Actions).
 5. After the first deploy: Workers → growtick-site → Settings → Domains → add `www.growtick.in` (and redirect apex).

@@ -151,17 +151,26 @@ const f = (n: string) => `${id}-${n}`;
     msg?.addEventListener('input', () => { if (count) count.textContent = `${msg.value.length} / ${MESSAGE_MAX}`; });
 
     // Turnstile on first interaction only, so the home page stays light.
-    if (siteKey) {
-      form.addEventListener('focusin', async () => {
-        if (tsWidget !== undefined) return;
-        tsWidget = '';
-        try {
-          await loadTurnstile();
-          tsWidget = (window as any).turnstile.render(form.querySelector('[data-ts-slot]'), {
-            sitekey: siteKey, appearance: 'interaction-only', size: 'flexible',
-          });
-        } catch { /* server will reject; fallback UI covers it */ }
-      }, { once: false });
+    let tsRendering: Promise<void> | null = null;
+    function ensureWidget(): Promise<void> {
+      if (!tsRendering) tsRendering = loadTurnstile().then(() => {
+        tsWidget = (window as any).turnstile.render(form.querySelector('[data-ts-slot]'), {
+          sitekey: siteKey, action: 'lead', appearance: 'interaction-only', size: 'flexible',
+        });
+      }).catch(() => { tsRendering = null; /* server will reject; fallback UI covers it */ });
+      return tsRendering;
+    }
+    if (siteKey) form.addEventListener('focusin', () => { ensureWidget(); });
+
+    // Wait (up to ~15s) for the widget to produce a token; it may need the visitor to click.
+    async function getToken(): Promise<string> {
+      await ensureWidget();
+      for (let i = 0; i < 60; i++) {
+        const t = tsWidget ? (window as any).turnstile?.getResponse(tsWidget) : '';
+        if (t) return t;
+        await new Promise((r) => setTimeout(r, 250));
+      }
+      return '';
     }
 
     function showErrors(errs: LeadErrors) {
@@ -200,11 +209,7 @@ const f = (n: string) => `${id}-${n}`;
       status.textContent = 'Sending…';
       submit.disabled = true;
       try {
-        if (siteKey && !raw['cf-turnstile-response']) {
-          await loadTurnstile().catch(() => {});
-          await new Promise((r) => setTimeout(r, 800));
-          raw['cf-turnstile-response'] = new FormData(form).get('cf-turnstile-response') ?? '';
-        }
+        if (siteKey) raw['cf-turnstile-response'] = await getToken();
         const res = await fetch('/api/lead', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
@@ -225,9 +230,10 @@ const f = (n: string) => `${id}-${n}`;
       } catch {
         status.textContent = '';
         fallback.hidden = false;
-        if (tsWidget) (window as any).turnstile?.reset(tsWidget);
       } finally {
         submit.disabled = false;
+        // Tokens are single-use: get a fresh one for the next attempt (form is gone on success).
+        if (tsWidget && form.isConnected && form.querySelector('[data-ts-slot]')) (window as any).turnstile?.reset(tsWidget);
       }
     }
 
