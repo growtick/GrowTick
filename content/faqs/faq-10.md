@@ -6,4 +6,4 @@ topic: creative-b2b
 published: true
 ---
 
-TODO(answer): Growtick to supply the final answer. Until then, call or WhatsApp us and we'll answer within the day.
+Ask for them when you enquire about festive posters or videos. We can also offer complimentary greetings, so mention it when you get in touch on WhatsApp, by phone or through the contact form.

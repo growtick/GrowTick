@@ -6,4 +6,4 @@ topic: tech-finance
 published: true
 ---
 
-TODO(answer): Growtick to supply the final answer. Until then, call or WhatsApp us and we'll answer within the day.
+Yes. Send us a photo or PDF of the notice on WhatsApp, or use the contact form. Our compliance team reviews it, prepares the reply, and follows the case through to closure. Timelines depend on the notice, so we confirm them once we've read it.

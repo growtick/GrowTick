@@ -6,4 +6,4 @@ topic: skill-academy
 published: true
 ---
 
-TODO(answer): Growtick to supply the final answer. Until then, call or WhatsApp us and we'll answer within the day.
+Course fees, durations and batch timings are available on request. Our course brochure, with full details, is shared on request too. Tell us which course interests you, on WhatsApp or by phone at +91 95130 59059, and we'll send it to you.

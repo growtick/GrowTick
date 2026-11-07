@@ -7,13 +7,13 @@ import { breadcrumbs } from '../lib/schema';
 
 const academy = (await getServices()).filter((s) => s.data.pillar === 'skill-academy');
 
-// TODO(PRD-OQ#2): replace with real course details once Growtick confirms them.
+// Durations, batches and fees are shared on request.
 const courses = [
-  { name: 'Tally Prime (basic to advanced)', duration: 'TBC', batches: 'Weekday & weekend batches — TBC' },
-  { name: 'Graphic Design (Photoshop)', duration: 'TBC', batches: 'TBC' },
-  { name: 'Web & Ecommerce', duration: 'TBC', batches: 'TBC' },
-  { name: 'Video & AI workflows', duration: 'TBC', batches: 'TBC' },
-  { name: 'Computer Basics (Email, MS Office)', duration: 'TBC', batches: 'TBC' },
+  { name: 'Tally Prime (basic to advanced)', duration: 'On request', batches: 'Weekday & weekend batches — on request' },
+  { name: 'Graphic Design (Photoshop)', duration: 'On request', batches: 'On request' },
+  { name: 'Web & Ecommerce', duration: 'On request', batches: 'On request' },
+  { name: 'Video & AI workflows', duration: 'On request', batches: 'On request' },
+  { name: 'Computer Basics (Email, MS Office)', duration: 'On request', batches: 'On request' },
   { name: 'Next-Gen Business Training', duration: 'Tailored', batches: 'One-to-one / family groups' },
 ];
 ---

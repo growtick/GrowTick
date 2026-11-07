@@ -6,4 +6,4 @@ topic: web-digital
 published: true
 ---
 
-TODO(answer): Growtick to supply the final answer. Until then, call or WhatsApp us and we'll answer within the day.
+Domain rights remain with Growtick while your hosting is active. If you decide to stop the service, we transfer the domain to your name on request, once any pending hosting fees are settled.

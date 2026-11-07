@@ -6,4 +6,4 @@ topic: trademark-ip
 published: true
 ---
 
-TODO(answer): Growtick to supply the final answer. Until then, call or WhatsApp us and we'll answer within the day.
+The timeline depends on the category of your brand and on any objections raised during the government review, so no fixed date can be promised. Once you tell us your brand name, logo or tagline, we check it and give you an estimate. We handle the registration and follow up on every step until it's complete.

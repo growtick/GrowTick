@@ -6,4 +6,4 @@ topic: web-digital
 published: true
 ---
 
-TODO(answer): Growtick to supply the final answer. Until then, call or WhatsApp us and we'll answer within the day.
+Google controls the verification step, so the timing isn't in our hands and can vary. We do the setup and submit your listing, and we tell you exactly what Google asks for at each step so there are no surprises. Ask us when you enquire and we'll let you know what to expect for your business.

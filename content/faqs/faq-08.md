@@ -6,4 +6,4 @@ topic: creative-b2b
 published: true
 ---
 
-TODO(answer): Growtick to supply the final answer. Until then, call or WhatsApp us and we'll answer within the day.
+Minimum quantities depend on the item: business cards, brochures, posters, banners and gift sets each have their own. Tell us what you need and we'll confirm the minimum and the price. Bulk orders are dispatched quickly once approved.

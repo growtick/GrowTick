@@ -21,7 +21,7 @@ export const site = {
   instagramHandle: 'growtick.in',
   instagramUrl: 'https://www.instagram.com/growtick.in',
 
-  // TODO(PRD-OQ#3): office address and city for Google Maps and local SEO.
+  // Office address still to be confirmed (PRD-OQ#3): office address and city for Google Maps and local SEO.
   address: {
     street: '',
     locality: '',
@@ -36,10 +36,10 @@ export const site = {
   googleBusinessUrl: '',
   hours: 'Mon–Sat, 10:00 am – 7:00 pm', // TODO: confirm opening hours
 
-  // TODO(PRD-OQ#1): is ₹400–900 monthly or yearly, and what decides the price?
+  // Hosting is billed monthly or yearly, based on requirements (decided by Growtick).
   hostingFee: { from: 400, to: 900, period: 'year' as 'month' | 'year', confirmed: false },
 
-  // TODO(PRD-OQ#2): show course fees, or keep "on request"?
+  // Course fees: on request (decided by Growtick). Brochure shared on request.
   showCourseFees: false,
 } as const;
 

@@ -1,16 +1,18 @@
 ---
 title: About Growtick
 seoTitle: "About Growtick — Skill Academy & 360° Corporate Solutions in {city}"
-seoDescription: "Growtick brings practical training, digital growth, finance and automation under one roof. Meet founders Naveen Jain. , Gaurav Jain and Yash Jain"
+seoDescription: "Growtick brings practical training, digital growth, finance and automation under one roof. Meet the team: Naveen Jain (Marketing Head), Gaurav Jain (Operations Head) and Yash Jain (Tech Lead)."
 ---
-
-TODO(copy): Growtick story — to be supplied by Growtick.
 
 Growtick started with a simple idea: the skills that help a student get a job are the same skills that help a business grow. So we built a **Skill Academy** and a **360° Corporate Solutions** team under one roof.
 
-## Naveen Jain, founder add here
+Our Skill Academy teaches practical, in-demand skills: Tally Prime, graphic design with Photoshop, web and ecommerce, video and AI workflows, and computer basics such as email and MS Office. Our 360° Corporate Solutions team helps businesses with websites, Google Business listings, social media, printing, corporate gifting, accounting, GST, and trademark registration.
 
-TODO(copy): short founder bio and photo.
+## Our team
+
+- **Naveen Jain** — Marketing Head
+- **Gaurav Jain** — Operations Head
+- **Yash Jain** — Tech Lead
 
 ## Why Growtick
 

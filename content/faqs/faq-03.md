@@ -6,4 +6,4 @@ topic: web-digital
 published: true
 ---
 
-TODO(answer): Growtick to supply the final answer. Until then, call or WhatsApp us and we'll answer within the day.
+Website hosting starts at ₹400 and goes up to ₹900, depending on your requirements. It is billed monthly or yearly, based on your requirements. Your website is built, hosted and kept up to date by Growtick while the service is active.

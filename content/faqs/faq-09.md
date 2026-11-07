@@ -6,4 +6,4 @@ topic: general
 published: true
 ---
 
-TODO(answer): Growtick to supply the final answer. Until then, call or WhatsApp us and we'll answer within the day.
+Yes. All our services can be delivered remotely, so businesses outside our city can work with us. Call or WhatsApp us to get started.

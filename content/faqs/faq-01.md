@@ -6,4 +6,4 @@ topic: skill-academy
 published: true
 ---
 
-TODO(answer): Growtick to supply the final answer. Until then, call or WhatsApp us and we'll answer within the day.
+Yes. Every Skill Academy course gives you a certificate when you complete it.
